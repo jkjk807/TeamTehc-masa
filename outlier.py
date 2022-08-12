@@ -6,7 +6,7 @@ from IPython.display import display
 
 #Read excel file.
 df = pd.read_excel("C:\\Users\\notth\\Documents\\MASA Hackathon\\Documentation & Materials\\TravelDataset.xlsx")
-df_cleaned= df.drop(df.index[df["Net Sales"] < 0])
+df_cleaned= df.drop(df[(df["Net Sales"] < 0) | (df["Duration"] < 0)].index)
 
 #To observe outliers with boxplot
 column = df_cleaned["Age"]
@@ -23,7 +23,6 @@ iqr = third_quartile - first_quartile
 
 upper_bound = np.where(df_cleaned["Age"] >= third_quartile + 1.5 * iqr)
 lower_bound = np.where(df_cleaned["Age"] <= first_quartile - 1.5 * iqr)
-print(upper_bound)
 i = 0
 while i < len(upper_bound):
     tmp = pd.concat([tmp, df_cleaned.iloc[upper_bound[i]]])
