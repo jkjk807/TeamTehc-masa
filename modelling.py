@@ -10,9 +10,6 @@ df = pd.read_excel("C:\\Users\\notth\\Documents\\MASA Hackathon\Documentation & 
 df = df.drop(df[(df["Net Sales"] < 0) | (df["Duration"] < 0)].index)
 df = df.drop(columns=["Gender", "Net Sales", "Commision (in value)"])
 
-df["Claim"].replace(["Yes", "No"],
-                    [1, 0], inplace=True)
-
 X = df.drop(columns=["Claim"])
 y = df["Claim"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
