@@ -1,3 +1,4 @@
+from random import randint
 import pandas as pd
 import joblib
 from sklearn.preprocessing import OneHotEncoder
@@ -7,10 +8,14 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RepeatedStratifiedKFold
 
 #Importing dataset and cleaning data.
 df = pd.read_excel("C:\\Users\\notth\\Documents\\MASA Hackathon\Documentation & Materials\\TravelDataset.xlsx")
@@ -33,6 +38,13 @@ y_test = le.transform(y_test)
 dtc = DecisionTreeClassifier()
 dtc.fit(X_train, y_train)
 predict = dtc.predict(X_test)
+accuracy = accuracy_score(y_test, predict)
+print(accuracy)
+
+#Logistic regression
+lr = LogisticRegression()
+lr.fit(X_train, y_train)
+predict = lr.predict(X_test)
 accuracy = accuracy_score(y_test, predict)
 print(accuracy)
 
@@ -60,3 +72,28 @@ accuracy = accuracy_score(y_test, predict)
 cv = cross_val_score(rf, X_train, y_train, cv=5)
 score = svc.score(X_test, y_test)
 print(accuracy, cv.mean(), score)
+
+#Tuning using randomized search
+param = {
+    "max_depth": [3, None],
+    "max_features": [randint(1, 9)],
+    "min_samples_leaf": [randint(1, 9)],
+    "criterion": ["gini", "entropy"]
+}
+
+dtc = DecisionTreeClassifier()
+dtc_cv = RandomizedSearchCV(dtc, param, cv=5)
+dtc_cv.fit(X_train, y_train)
+print(dtc_cv.best_params_, dtc_cv.best_score_)
+
+#Tuning using grid
+param = {
+    "n_estimators": [200, 500],
+    "max_depth": [4,5,6,7,8],
+    "criterion": ["gini", "entropy"]
+}
+
+rf = RandomForestClassifier()
+rf_cv = GridSearchCV(estimator=rf, param_grid=param, cv=5)
+rf_cv.fit(X_train, y_train)
+print(rf_cv.best_params_, rf_cv.best_score_)
